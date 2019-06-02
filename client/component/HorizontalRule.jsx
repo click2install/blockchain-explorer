@@ -8,14 +8,14 @@ import React from 'react';
  * @param {Object} props The props with the name.
  */
 const HorizontalRule = (props) => (
-  <div className={ `hr ${ props.className ? props.className : '' }` } >
-    <span className="hr__title">{ props.title }</span>
+  <div className={`hr ${props.className ? props.className : ''}`} >
+    <span className="hr__title">{props.title}</span>
     <div className="hr__wrapper">
       <hr />
     </div>
-    { !!props.select &&
+    {!!props.select &&
       <div className="hr__select">
-        { props.select }
+        {props.select}
       </div>
     }
   </div>

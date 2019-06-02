@@ -6,7 +6,8 @@ import numeral from 'numeral';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export default class GraphLineFull extends Component {
+export default class GraphLineFull extends Component
+{
   static defaultProps = {
     color: 'rgba(25, 145, 235, 1)',
     data: [],
@@ -24,19 +25,22 @@ export default class GraphLineFull extends Component {
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
 
     this.chart = null;
     this.id = this.randomString();
   };
 
-  componentDidMount() {
+  componentDidMount()
+  {
     const el = document.getElementById(this.id);
 
     // Change the clip area for the graph to avoid
     // peak and valley cutoff.
-    Chart.canvasHelpers.clipArea = (ctx, clipArea) => {
+    Chart.canvasHelpers.clipArea = (ctx, clipArea) =>
+    {
       ctx.save();
       ctx.beginPath();
       ctx.rect(
@@ -51,19 +55,23 @@ export default class GraphLineFull extends Component {
     this.chart = new Chart(el, this.getConfig());
   };
 
-  componentDidUpdate(prevProps) {
-    if (!isEqual(this.props.data, prevProps.data)) {
+  componentDidUpdate(prevProps)
+  {
+    if (!isEqual(this.props.data, prevProps.data))
+    {
       const config = this.getConfig();
       this.chart.config.data = config.data;
       this.chart.update();
     }
   };
 
-  componentWillUnmount() {
+  componentWillUnmount()
+  {
     this.chart.destroy();
   };
 
-  getConfig = () => {
+  getConfig = () =>
+  {
     const data = this.props.data.map(d => numeral(d).value());
 
     let max = Math.max.apply(Math, data);
@@ -75,11 +83,13 @@ export default class GraphLineFull extends Component {
     const canvas = document.getElementById(this.id);
     const ctx = canvas.getContext('2d');
     let gradientFill;
-    if (ctx) {
-      gradientFill = ctx.createLinearGradient(canvas.width/2, 0, canvas.width/2, canvas.height*2);
+    if (ctx)
+    {
+      gradientFill = ctx.createLinearGradient(canvas.width / 2, 0, canvas.width / 2, canvas.height * 2);
       gradientFill.addColorStop(0, "rgba(25, 145, 235, 0.6)");
       gradientFill.addColorStop(1, "rgba(25, 145, 235, 0.0)");
-    } else {
+    } else
+    {
       gradientFill = false;
     }
 
@@ -170,10 +180,11 @@ export default class GraphLineFull extends Component {
     };
   };
 
-  render() {
+  render()
+  {
     return (
       <div style={{ height: this.props.height, width: this.props.width }}>
-        <canvas id={ this.id } />
+        <canvas id={this.id} />
       </div>
     );
   };

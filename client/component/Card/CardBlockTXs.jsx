@@ -7,7 +7,8 @@ import React from 'react';
 
 import Table from '../Table';
 
-export default class CardBlockTXs extends Component {
+export default class CardBlockTXs extends Component
+{
   static defaultProps = {
     txs: []
   };
@@ -16,7 +17,8 @@ export default class CardBlockTXs extends Component {
     txs: PropTypes.array.isRequired
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
     this.state = {
       cols: [
@@ -27,20 +29,21 @@ export default class CardBlockTXs extends Component {
     };
   };
 
-  render() {
+  render()
+  {
     return (
       <div className="animated fadeIn">
-      <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map(tx => ({
-          ...tx,
-          createdAt: dateFormat(tx.createdAt),
-          recipients: tx.vout.length,
-          txId: (
-            <Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>
-          )
-        })) } />
-        </div>
+        <Table
+          cols={this.state.cols}
+          data={this.props.txs.map(tx => ({
+            ...tx,
+            createdAt: dateFormat(tx.createdAt),
+            recipients: tx.vout.length,
+            txId: (
+              <Link to={`/tx/${tx.txId}`}>{tx.txId}</Link>
+            )
+          }))} />
+      </div>
     );
   };
 }

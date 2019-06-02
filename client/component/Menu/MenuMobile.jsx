@@ -8,7 +8,8 @@ import { Link } from 'react-router-dom';
 import Icon from '../Icon';
 import SearchBar from '../SearchBar';
 
-export default class MenuMobile extends Component {
+export default class MenuMobile extends Component
+{
   static propTypes = {
     links: PropTypes.array
   };
@@ -17,7 +18,8 @@ export default class MenuMobile extends Component {
     links: []
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
 
     this.state = {
@@ -25,18 +27,20 @@ export default class MenuMobile extends Component {
     }
   }
 
-  getLinks = () => {
+  getLinks = () =>
+  {
     const { props } = this;
 
-    return props.links.map((i, idx) => {
+    return props.links.map((i, idx) =>
+    {
       return (
-        <Link key={ idx } className="menu-mobile__item" to={ i.href } onClick={ this.handleToggle } >
+        <Link key={idx} className="menu-mobile__item" to={i.href} onClick={this.handleToggle} >
           <img
-            alt={ i.label }
+            alt={i.label}
             className="menu-mobile__icon"
-            src={ i.icon }
-            title={ this.state.isOpen ? null : i.label } />
-          <span className="menu-mobile__item-label" >{ i.label }</span>
+            src={i.icon}
+            title={this.state.isOpen ? null : i.label} />
+          <span className="menu-mobile__item-label" >{i.label}</span>
         </Link>
       )
     })
@@ -44,20 +48,21 @@ export default class MenuMobile extends Component {
 
   handleToggle = () => this.setState({ isOpen: !this.state.isOpen });
 
-  render() {
+  render()
+  {
     return (
-      <div className={ `menu-mobile ${ this.state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close' }` }>
+      <div className={`menu-mobile ${this.state.isOpen ? 'menu-mobile--open' : 'menu-mobile--close'}`}>
         <div className="menu-mobile__search-wrapper">
           <SearchBar
             className="search--mobile mr-3"
-            onSearch={ this.props.onSearch }
+            onSearch={this.props.onSearch}
             placeholder="Search Blockchain" />
-          <a onClick={ this.handleToggle } >
-            <Icon name="bars" className="menu-mobile__toggle" onClick={ this.handleToggle } />
+          <a onClick={this.handleToggle} >
+            <Icon name="bars" className="menu-mobile__toggle" onClick={this.handleToggle} />
           </a>
         </div>
         <div className="menu-mobile__item-wrapper" >
-          { this.getLinks() }
+          {this.getLinks()}
         </div>
       </div>
     )

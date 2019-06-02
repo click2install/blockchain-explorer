@@ -8,7 +8,8 @@ import React from 'react';
 
 import Table from '../Table';
 
-export default class CardTXOut extends Component {
+export default class CardTXOut extends Component
+{
   static defaultProps = {
     txs: []
   };
@@ -17,7 +18,8 @@ export default class CardTXOut extends Component {
     txs: PropTypes.array.isRequired
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
     this.state = {
       cols: [
@@ -27,21 +29,22 @@ export default class CardTXOut extends Component {
     };
   };
 
-  render() {
+  render()
+  {
     return (
       <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map(tx => ({
+        cols={this.state.cols}
+        data={this.props.txs.map(tx => ({
           ...tx,
           address: (
-            <Link to={ `/address/${ tx.address }` }>{ tx.address }</Link>
+            <Link to={`/address/${tx.address}`}>{tx.address}</Link>
           ),
           value: (
             <span className="badge badge-success">
-              { numeral(tx.value).format('0,0.0000') } BWK
+              {numeral(tx.value).format('0,0.0000')} BWK
             </span>
           )
-        })) } />
+        }))} />
     );
   };
 }

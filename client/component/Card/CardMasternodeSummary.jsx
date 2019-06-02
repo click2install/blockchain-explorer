@@ -8,7 +8,8 @@ import CountUp from '../CountUp';
 import GraphLine from '../Graph/GraphLine';
 
 
-export default class CardMasternodeSummary extends Component {
+export default class CardMasternodeSummary extends Component
+{
   static defaultProps = {
     offline: 0,
     online: 0,
@@ -23,29 +24,30 @@ export default class CardMasternodeSummary extends Component {
     yAxis: PropTypes.arrayOf(PropTypes.number).isRequired
   };
 
-  render() {
+  render()
+  {
     const total = this.props.online + this.props.offline;
 
     return (
       <div className="animated fadeInUp">
-      <Card
-        className="card--graph"
-        title="Masternode">
-        <p className="card__data-main">
-          <CountUp
-            decimals={ 0 }
-            duration={ 1 }
-            end={ total }
-            start={ 0 } />
-        </p>
-        <p className="card__data-sub">Online: { this.props.online }</p>
-        <GraphLine
-          color="#1991eb"
-          className="card__graph"
-          data={ this.props.yAxis.reverse() }
-          height="100px"
-          labels={ this.props.xAxis.reverse() } />
-      </Card>
+        <Card
+          className="card--graph"
+          title="Masternode">
+          <p className="card__data-main">
+            <CountUp
+              decimals={0}
+              duration={1}
+              end={total}
+              start={0} />
+          </p>
+          <p className="card__data-sub">Online: {this.props.online}</p>
+          <GraphLine
+            color="#1991eb"
+            className="card__graph"
+            data={this.props.yAxis.reverse()}
+            height="100px"
+            labels={this.props.xAxis.reverse()} />
+        </Card>
       </div>
     );
   };

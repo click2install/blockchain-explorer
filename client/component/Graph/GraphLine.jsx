@@ -5,7 +5,8 @@ import isEqual from 'lodash/isEqual';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-export default class GraphLine extends Component {
+export default class GraphLine extends Component
+{
   static defaultProps = {
     color: 'rgba(0,255,0,1)',
     data: [],
@@ -23,19 +24,22 @@ export default class GraphLine extends Component {
     width: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
 
     this.chart = null;
     this.id = this.randomString();
   };
 
-  componentDidMount() {
+  componentDidMount()
+  {
     const el = document.getElementById(this.id);
 
     // Change the clip area for the graph to avoid
     // peak and valley cutoff.
-    Chart.canvasHelpers.clipArea = (ctx, clipArea) => {
+    Chart.canvasHelpers.clipArea = (ctx, clipArea) =>
+    {
       ctx.save();
       ctx.beginPath();
       ctx.rect(
@@ -50,19 +54,23 @@ export default class GraphLine extends Component {
     this.chart = new Chart(el, this.getConfig());
   };
 
-  componentDidUpdate(prevProps) {
-    if (!isEqual(this.props.data, prevProps.data)) {
+  componentDidUpdate(prevProps)
+  {
+    if (!isEqual(this.props.data, prevProps.data))
+    {
       const config = this.getConfig();
       this.chart.config.data = config.data;
       this.chart.update();
     }
   };
 
-  componentWillUnmount() {
+  componentWillUnmount()
+  {
     this.chart.destroy();
   };
 
-  getConfig = () => {
+  getConfig = () =>
+  {
     let max = Math.max(this.props.data);
     let min = Math.min(this.props.data);
     max = max + (max * 0.1);
@@ -157,12 +165,13 @@ export default class GraphLine extends Component {
     };
   };
 
-  render() {
+  render()
+  {
     return (
       <div
-        className={ `${ this.props.className ? this.props.className : '' }` }
+        className={`${this.props.className ? this.props.className : ''}`}
         style={{ height: this.props.height, width: this.props.width }}>
-        <canvas id={ this.id } />
+        <canvas id={this.id} />
       </div>
     );
   };

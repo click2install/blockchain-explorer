@@ -10,7 +10,8 @@ import React from 'react';
 import Table from '../Table';
 import TransactionValue from '../../component/Table/TransactionValue';
 
-export default class CardTXs extends Component {
+export default class CardTXs extends Component
+{
   static defaultProps = {
     txs: [],
     addBadgeClassToValue: true
@@ -21,7 +22,8 @@ export default class CardTXs extends Component {
     addBadgeClassToValue: PropTypes.bool
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
     this.state = {
       cols: [
@@ -35,19 +37,23 @@ export default class CardTXs extends Component {
     };
   };
 
-  render() {
+  render()
+  {
     return (
       <Table
         cols={this.state.cols}
-        data={this.props.txs.map(tx => {
+        data={this.props.txs.map(tx =>
+        {
           const createdAt = moment(tx.createdAt).utc();
           const diffSeconds = moment().utc().diff(createdAt, 'seconds');
           let blockValue = 0.0;
-          if (tx.vout && tx.vout.length) {
+          if (tx.vout && tx.vout.length)
+          {
             tx.vout.forEach(vout => blockValue += vout.value);
           }
           let spanClassName = ``;
-          if (this.props.addBadgeClassToValue) {
+          if (this.props.addBadgeClassToValue)
+          {
             spanClassName = `badge badge-${blockValue < 0 ? 'danger' : 'success'}`;
           }
 

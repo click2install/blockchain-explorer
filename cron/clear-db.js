@@ -14,7 +14,8 @@ const UTXO = require('../model/utxo');
 /**
  * Clear database.
  */
-async function clearDatabase() {
+async function clearDatabase()
+{
   await Block.remove({});
   await Coin.remove({});
   await Masternode.remove({});
@@ -27,10 +28,12 @@ async function clearDatabase() {
 /**
  * Handle locking.
  */
-async function update() {
+async function update()
+{
   let code = 0;
 
-  try {
+  try
+  {
     locker.lock('block');
     locker.lock('coin');
     locker.lock('masternode');
@@ -39,11 +42,16 @@ async function update() {
     locker.lock('tx');
     locker.lock('utxo');
     await clearDatabase();
-  } catch(err) {
+  }
+  catch (err)
+  {
     console.log(err);
     code = 1;
-  } finally {
-    try {
+  }
+  finally
+  {
+    try
+    {
       locker.unlock('block');
       locker.unlock('coin');
       locker.unlock('masternode');
@@ -51,10 +59,13 @@ async function update() {
       locker.unlock('rich');
       locker.unlock('tx');
       locker.unlock('utxo');
-    } catch(err) {
+    }
+    catch (err)
+    {
       console.log(err);
       code = 1;
     }
+
     exit(code);
   }
 }

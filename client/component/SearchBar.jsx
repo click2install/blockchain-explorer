@@ -7,7 +7,8 @@ import React from 'react';
 
 import Icon from './Icon';
 
-export default class SearchBar extends Component {
+export default class SearchBar extends Component
+{
   static defaultProps = {
     placeholder: 'You may enter a block height, block hash, tx hash or address and hit enter.',
   }
@@ -17,29 +18,33 @@ export default class SearchBar extends Component {
     placeholder: PropTypes.string.isRequired
   };
 
-  handleKeyPress = (ev) => {
-    if (ev.key === 'Enter') {
+  handleKeyPress = (ev) =>
+  {
+    if (ev.key === 'Enter')
+    {
       ev.preventDefault();
 
       const term = ev.target.value.trim();
       ev.target.value = '';
 
-      if (!!term) {
+      if (!!term)
+      {
         this.props.onSearch(term);
       }
     }
   };
 
-  render() {
+  render()
+  {
     const { props } = this;
 
     return (
       <div className="animated fadeIn" style={{ width: '100%' }}>
-        <div className={ `search ${ props.className ? props.className : '' }` }>
+        <div className={`search ${props.className ? props.className : ''}`}>
           <input
             className="search__input"
-            onKeyPress={ this.handleKeyPress }
-            placeholder={ props.placeholder } />
+            onKeyPress={this.handleKeyPress}
+            placeholder={props.placeholder} />
           <Icon name="search" className="search__icon" />
         </div>
       </div>

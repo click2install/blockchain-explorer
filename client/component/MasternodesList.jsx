@@ -14,7 +14,8 @@ import Icon from '../component/Icon';
 
 import { PAGINATION_PAGE_SIZE } from '../constants';
 
-class MasternodesList extends Component {
+class MasternodesList extends Component
+{
   static propTypes = {
     title: PropTypes.string.isRequired,
     getMNs: PropTypes.func.isRequired,
@@ -22,7 +23,8 @@ class MasternodesList extends Component {
     hideCols: PropTypes.array
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
     this.debounce = null;
     this.state = {
@@ -44,38 +46,49 @@ class MasternodesList extends Component {
     };
 
     // You can optionally pass in array of columns to hide in masternodes table
-    if (!!this.props.hideCols) {
-      this.state.cols = this.state.cols.filter((value) => {
+    if (!!this.props.hideCols)
+    {
+      this.state.cols = this.state.cols.filter((value) =>
+      {
         return !this.props.hideCols.includes(value.key);
       });
     }
   };
 
-  componentDidMount() {
+  componentDidMount()
+  {
     this.getMNs();
   };
 
-  componentWillUnmount() {
-    if (this.debounce) {
+  componentWillUnmount()
+  {
+    if (this.debounce)
+    {
       clearTimeout(this.debounce);
       this.debounce = null;
     }
   };
 
-  getMNs = () => {
-    this.setState({ loading: true }, () => {
-      if (this.debounce) {
+  getMNs = () =>
+  {
+    this.setState({ loading: true }, () =>
+    {
+      if (this.debounce)
+      {
         clearTimeout(this.debounce);
       }
 
-      this.debounce = setTimeout(() => {
+      this.debounce = setTimeout(() =>
+      {
         this.props
           .getMNs({
             limit: this.state.size,
             skip: (this.state.page - 1) * this.state.size
           })
-          .then(({ mns, pages }) => {
-            if (this.debounce) {
+          .then(({ mns, pages }) =>
+          {
+            if (this.debounce)
+            {
               this.setState({ mns, pages, loading: false });
             }
           })
@@ -88,16 +101,21 @@ class MasternodesList extends Component {
 
   handleSize = size => this.setState({ size, page: 1 }, this.getMNs);
 
-  render() {
-    if (!!this.state.error) {
+  render()
+  {
+    if (!!this.state.error)
+    {
       return this.renderError(this.state.error);
-    } else if (this.state.loading) {
+    } else if (this.state.loading)
+    {
       return this.renderLoading();
     }
     const selectOptions = PAGINATION_PAGE_SIZE;
 
-    const getPaginationDropdown = () => {
-      if (!this.props.isPaginationEnabled) {
+    const getPaginationDropdown = () =>
+    {
+      if (!this.props.isPaginationEnabled)
+      {
         return null;
       }
       return (
@@ -108,8 +126,10 @@ class MasternodesList extends Component {
       );
     };
 
-    const getPaginationControls = () => {
-      if (!this.props.isPaginationEnabled) {
+    const getPaginationControls = () =>
+    {
+      if (!this.props.isPaginationEnabled)
+      {
         return null;
       }
       return (<Pagination
@@ -119,8 +139,10 @@ class MasternodesList extends Component {
         total={this.state.pages} />);
     }
 
-    const getIcon = (mn) => {
-      switch (mn.network) {
+    const getIcon = (mn) =>
+    {
+      switch (mn.network)
+      {
         case "onion":
           return (
             <span title="Onion Network"><Icon name="user-secret" className="pr-1 text-primary fa-lg" /></span>
@@ -145,7 +167,8 @@ class MasternodesList extends Component {
           title={this.props.title} />
         <Table
           cols={this.state.cols}
-          data={sortBy(this.state.mns.map((mn) => {
+          data={sortBy(this.state.mns.map((mn) =>
+          {
             const lastPaidAt = moment(mn.lastPaidAt).utc();
             const isEpoch = lastPaidAt.unix() === 0;
 

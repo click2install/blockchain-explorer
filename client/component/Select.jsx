@@ -2,8 +2,10 @@ import React, { Component } from 'react';
 import Select from 'react-opium-select';
 import 'react-opium-select/style.css';
 
-class App extends Component {
-  render() {
+class App extends Component
+{
+  render()
+  {
     const settings = {
       style: {
         background: '#ffffff',
@@ -17,8 +19,8 @@ class App extends Component {
     return (
       <div className="select">
         <Select
-          { ...this.props }
-          settings={ settings } />
+          {...this.props}
+          settings={settings} />
       </div>
     );
   }

@@ -11,13 +11,15 @@ import Icon from './Icon';
  * Will use material icons to render.
  * @param {Object} props The props with the name.
  */
-class Footer extends Component {
+class Footer extends Component
+{
   static propTypes = {
     coins: PropTypes.array.isRequired,
     txs: PropTypes.array.isRequired,
   };
 
-  render() {
+  render()
+  {
     const coin = this.props.coins && this.props.coins.length ? this.props.coins[0] : { status: 'offline', blocks: 0 };
     const blocks = this.props.txs && this.props.txs.length ? this.props.txs[0].blockHeight : coin.blocks;
     const statusColor = (coin.status && coin.status.toLowerCase() === 'online') ? 'green' : 'red';
@@ -36,17 +38,17 @@ class Footer extends Component {
             <div className="footer__data-block">
               <p className="footer__data-title">Status</p>
               <p>
-                <span className={ `u__dot u--text-${ statusColor }` }>&bull;</span>
-                <span>{ coin.status }</span>
+                <span className={`u__dot u--text-${statusColor}`}>&bull;</span>
+                <span>{coin.status}</span>
               </p>
             </div>
             <div className="footer__data-block">
               <p className="footer__data-title">Blocks</p>
-              <p><b>{ blocks }</b></p>
+              <p><b>{blocks}</b></p>
             </div>
             <div className="footer__data-block">
               <p className="footer__data-title">Time</p>
-              <p>{ `${ moment().utc().format('HH:mm') }  UTC`}</p>
+              <p>{`${moment().utc().format('HH:mm')}  UTC`}</p>
             </div>
           </div>
         </div>

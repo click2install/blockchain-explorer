@@ -5,7 +5,8 @@ import React from 'react';
 
 import Card from './Card';
 
-export default class CardGraph extends Component {
+export default class CardGraph extends Component
+{
   static defaultProps = {
     title: 'Graph',
   };
@@ -15,14 +16,15 @@ export default class CardGraph extends Component {
     title: PropTypes.string
   };
 
-  render() {
+  render()
+  {
     const { props } = this;
 
     return (
-      <Card title={ props.title } className="card--graph">
+      <Card title={props.title} className="card--graph">
         <p className="card__data-main">1417.2417 GHs</p>
         <p className="card__data-sub">Difficulty: 23947.84191275</p>
-        { this.props.children }
+        {this.props.children}
       </Card>
     );
   };

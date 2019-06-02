@@ -8,7 +8,8 @@ import React from 'react';
 
 import Table from '../Table';
 
-export default class CardAddressTXs extends Component {
+export default class CardAddressTXs extends Component
+{
   static defaultProps = {
     address: '',
     txs: [],
@@ -21,7 +22,8 @@ export default class CardAddressTXs extends Component {
     utxo: PropTypes.array.isRequired
   };
 
-  constructor(props) {
+  constructor(props)
+  {
     super(props);
     this.state = {
       cols: [
@@ -32,40 +34,44 @@ export default class CardAddressTXs extends Component {
     };
   };
 
-  render() {
+  render()
+  {
     const spentTXs = new Set(
-      this.props.utxo.map(tx => `${ tx.txId }:${ tx.n }`)
+      this.props.utxo.map(tx => `${tx.txId}:${tx.n}`)
     );
 
     return (
       <div className="animated fadeIn">
-      <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map((tx) => {
-          let amount = 0.0;
-          let isSpent = false;
-          tx.vout.forEach((vout) => {
-            if (vout.address === this.props.address) {
-              amount += vout.value;
-              isSpent = !spentTXs.has(`${ tx.txId }:${ vout.n }`);
-            }
-          });
+        <Table
+          cols={this.state.cols}
+          data={this.props.txs.map((tx) =>
+          {
+            let amount = 0.0;
+            let isSpent = false;
+            tx.vout.forEach((vout) =>
+            {
+              if (vout.address === this.props.address)
+              {
+                amount += vout.value;
+                isSpent = !spentTXs.has(`${tx.txId}:${vout.n}`);
+              }
+            });
 
-          return ({
-            ...tx,
-            amount: (
-              <span
-                className={ `badge badge-${ isSpent ? 'danger' : 'success' }` }>
-                { isSpent ? '-' : ''}{ numeral(amount).format('0,0.0000') } BWK
+            return ({
+              ...tx,
+              amount: (
+                <span
+                  className={`badge badge-${isSpent ? 'danger' : 'success'}`}>
+                  {isSpent ? '-' : ''}{numeral(amount).format('0,0.0000')} BWK
               </span>
-            ),
-            createdAt: dateFormat(tx.createdAt),
-            txId: (
-              <Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>
-            )
-          });
-        }) } />
-        </div>
+              ),
+              createdAt: dateFormat(tx.createdAt),
+              txId: (
+                <Link to={`/tx/${tx.txId}`}>{tx.txId}</Link>
+              )
+            });
+          })} />
+      </div>
     );
   };
 }

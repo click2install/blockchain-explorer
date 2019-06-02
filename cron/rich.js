@@ -10,14 +10,16 @@ const UTXO = require('../model/utxo');
  * Build the list of rich addresses from
  * unspent transactions.
  */
-async function syncRich() {
+async function syncRich()
+{
   await Rich.remove({});
 
-  const addresses = await UTXO.aggregate([
-    { $group: { _id: '$address', sum: { $sum: '$value' } } },
-    { $sort: { sum: -1 } },
-    { $limit: 101 }
-  ]);
+  const addresses = await UTXO.aggregate(
+    [
+      { $group: { _id: '$address', sum: { $sum: '$value' } } },
+      { $sort: { sum: -1 } },
+      { $limit: 101 }
+    ]);
 
   await Rich.insertMany(addresses.filter(addr => addr._id !== 'ZEROCOIN').map(addr => ({
     address: addr._id,
@@ -28,23 +30,33 @@ async function syncRich() {
 /**
  * Handle locking.
  */
-async function update() {
+async function update()
+{
   const type = 'rich';
   let code = 0;
 
-  try {
+  try
+  {
     locker.lock(type);
     await syncRich();
-  } catch(err) {
+  }
+  catch (err)
+  {
     console.log(err);
     code = 1;
-  } finally {
-    try {
+  }
+  finally
+  {
+    try
+    {
       locker.unlock(type);
-    } catch(err) {
+    }
+    catch (err)
+    {
       console.log(err);
       code = 1;
     }
+
     exit(code);
   }
 }

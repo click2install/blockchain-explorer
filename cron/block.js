@@ -1,5 +1,6 @@
 
 require('babel-polyfill');
+
 const blockchain = require('../lib/blockchain');
 const config = require('../config');
 const { exit, rpc } = require('../lib/cron');
@@ -17,15 +18,18 @@ const UTXO = require('../model/utxo');
  * @param {Number} start The current starting block height.
  * @param {Number} stop The current block height at the tip of the chain.
  */
-async function syncBlocks(start, stop, clean = false) {
-  if (clean) {
+async function syncBlocks(start, stop, clean = false)
+{
+  if (clean)
+  {
     await Block.remove({ height: { $gte: start, $lte: stop } });
     await TX.remove({ blockHeight: { $gte: start, $lte: stop } });
     await UTXO.remove({ blockHeight: { $gte: start, $lte: stop } });
   }
 
   let block;
-  for(let height = start; height <= stop; height++) {
+  for (let height = start; height <= stop; height++)
+  {
     const hash = await rpc.call('getblockhash', [height]);
     const rpcblock = await rpc.call('getblock', [hash]);
 
@@ -46,29 +50,34 @@ async function syncBlocks(start, stop, clean = false) {
 
     await block.save();
 
-    await forEachSeries(block.txs, async (txhash) => {
+    await forEachSeries(block.txs, async (txhash) =>
+    {
       const rpctx = await util.getTX(txhash);
 
-      if (blockchain.isPoS(block)) {
+      if (blockchain.isPoS(block))
+      {
         await util.addPoS(block, rpctx);
-      } else {
+      } else
+      {
         await util.addPoW(block, rpctx);
       }
     });
 
-    console.log(`Height: ${ block.height } Hash: ${ block.hash }`);
+    console.log(`Height: ${block.height} Hash: ${block.hash}`);
   }
 
   // Post an update to slack incoming webhook if url is
   // provided in config.js.
-  if (block && !!config.slack && !!config.slack.url) {
+  if (block && !!config.slack && !!config.slack.url)
+  {
     const webhook = new IncomingWebhook(config.slack.url);
     const superblock = await rpc.call('getnextsuperblock');
     const finalBlock = superblock - 1920;
 
     let text = '';
     // If finalization period is within 12 hours (12 * 60 * 60) / 90 = 480
-    if (block.height == (finalBlock - 480)) {
+    if (block.height == (finalBlock - 480))
+    {
       text = `
       Finalization window starts in 12 hours.\n
       \n
@@ -79,7 +88,8 @@ async function syncBlocks(start, stop, clean = false) {
       `;
     }
     // If finalization block.
-    else if (block.height == finalBlock) {
+    else if (block.height == finalBlock)
+    {
       text = `
       Finalization block!\n
       \n
@@ -88,7 +98,8 @@ async function syncBlocks(start, stop, clean = false) {
       `;
     }
     // If budget payment block start then notify.
-    else if (block.height == superblock) {
+    else if (block.height == superblock)
+    {
       text = `
       Governance payment(s) started!\n
       \n
@@ -97,13 +108,17 @@ async function syncBlocks(start, stop, clean = false) {
       `;
     }
     // Just every block for now while testing.
-    else {
+    else
+    {
       text = `Block: ${block.height}\n`;
     }
 
-    if (!!text) {
-      webhook.send(text, (err, res) => {
-        if (err) {
+    if (!!text)
+    {
+      webhook.send(text, (err, res) =>
+      {
+        if (err)
+        {
           console.log('Slack Error:', err);
           return;
         }
@@ -116,24 +131,28 @@ async function syncBlocks(start, stop, clean = false) {
 /**
  * Handle locking.
  */
-async function update() {
+async function update()
+{
   const type = 'block';
   let code = 0;
 
-  try {
+  try
+  {
     const info = await rpc.call('getinfo');
-    const block = await Block.findOne().sort({ height: -1});
+    const block = await Block.findOne().sort({ height: -1 });
 
     let clean = true; // Always clear for now.
     let dbHeight = block && block.height ? block.height : 1;
     let rpcHeight = info.blocks;
 
     // If heights provided then use them instead.
-    if (!isNaN(process.argv[2])) {
+    if (!isNaN(process.argv[2]))
+    {
       clean = true;
       dbHeight = parseInt(process.argv[2], 10);
     }
-    if (!isNaN(process.argv[3])) {
+    if (!isNaN(process.argv[3]))
+    {
       clean = true;
       rpcHeight = parseInt(process.argv[3], 10);
     }
@@ -141,24 +160,30 @@ async function update() {
 
     // Create the cron lock, if return is called below the finally will still be triggered releasing the lock without errors
     locker.lock(type);
-    
+
     // If nothing to do then exit.
-    if (dbHeight >= rpcHeight) {
+    if (dbHeight >= rpcHeight)
+    {
       return;
     }
     // If starting from genesis skip.
-    else if (dbHeight === 0) {
+    else if (dbHeight === 0)
+    {
       dbHeight = 1;
     }
 
     await syncBlocks(dbHeight, rpcHeight, clean);
-  } catch(err) {
+  } catch (err)
+  {
     console.log(err);
     code = 1;
-  } finally {
-    try {
+  } finally
+  {
+    try
+    {
       locker.unlock(type);
-    } catch(err) {
+    } catch (err)
+    {
       console.log(err);
       code = 1;
     }
