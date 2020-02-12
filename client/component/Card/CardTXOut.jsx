@@ -7,10 +7,14 @@ import PropTypes from 'prop-types';
 import React from 'react';
 
 import Table from '../Table';
+import config from '../../../config'
 
+import CarverAddressLabelWidget from '../AddressWidgets/CarverAddressLabelWidget'
+
+//@todo this is wrong name for this card, it should be CardVouts
 export default class CardTXOut extends Component {
   static defaultProps = {
-    txs: []
+    txs: [] //@todo should be vouts
   };
 
   static propTypes = {
@@ -30,18 +34,18 @@ export default class CardTXOut extends Component {
   render() {
     return (
       <Table
-        cols={ this.state.cols }
-        data={ this.props.txs.map(tx => ({
+        cols={this.state.cols}
+        data={this.props.txs.map(tx => ({
           ...tx,
           address: (
-            <Link to={ `/address/${ tx.address }` }>{ tx.address }</Link>
+            <Link to={`/address/${tx.carverAddress.label}`}><CarverAddressLabelWidget carverAddress={tx.carverAddress} /></Link>
           ),
           value: (
-            <span className="badge badge-success">
-              { numeral(tx.value).format('0,0.0000') } BWK
+            <span className="badge badge-success" title={`${numeral(tx.amount).format(config.coinDetails.coinTooltipNumberFormat)} ${config.coinDetails.shortName}`}>
+              {numeral(tx.amount).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
             </span>
-          )
-        })) } />
+          ) // @todo Move these badges to a component
+        }))} />
     );
   };
 }

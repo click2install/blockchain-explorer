@@ -27,10 +27,10 @@ export default class CardTXs extends Component {
       cols: [
         { key: 'blockHeight', title: 'Height' },
         { key: 'txId', title: 'Transaction Hash' },
-        { key: 'vout', title: 'Value' },
-        { key: 'age', title: 'Age' },
-        { key: 'recipients', title: 'Recipients' },
-        { key: 'createdAt', title: 'Created' },
+        { key: 'amount', title: 'Amount' },
+        { key: 'addressesIn', title: 'Sources' },
+        { key: 'addressesOut', title: 'Recepients' },
+        { key: 'date', title: 'Date' },
       ]
     };
   };
@@ -40,37 +40,49 @@ export default class CardTXs extends Component {
       <Table
         cols={this.state.cols}
         data={this.props.txs.map(tx => {
-          const createdAt = moment(tx.createdAt).utc();
-          const diffSeconds = moment().utc().diff(createdAt, 'seconds');
-          let blockValue = 0.0;
-          if (tx.vout && tx.vout.length) {
-            tx.vout.forEach(vout => blockValue += vout.value);
-          }
+          const date = moment(tx.date).utc();
+          const diffSeconds = moment().utc().diff(date, 'seconds');
+          let amount = tx.amountOut;
+
           let spanClassName = ``;
           if (this.props.addBadgeClassToValue) {
-            spanClassName = `badge badge-${blockValue < 0 ? 'danger' : 'success'}`;
+            spanClassName = `badge badge-${amount < 0 ? 'danger' : 'success'}`;
           }
 
           return ({
             ...tx,
-            age: diffSeconds < 60 ? `${diffSeconds} seconds` : createdAt.fromNow(true),
             blockHeight: (
               <Link to={`/block/${tx.blockHeight}`}>
                 {tx.blockHeight}
               </Link>
             ),
-            createdAt: dateFormat(tx.createdAt),
-            recipients: tx.vout.length,
             txId: (
               <Link to={`/tx/${tx.txId}`}>
                 {tx.txId}
               </Link>
             ),
-            vout: (
+            amount: (
               <span className={spanClassName}>
-                {TransactionValue(tx, blockValue)}
+                <Link to={`/tx/${tx.txId}`}>
+                  {TransactionValue(tx, amount)}
+                </Link>
               </span>
-            )
+            ),
+            addressesIn: (
+              <Link to={`/tx/${tx.txId}`}>
+                {tx.addressesIn}
+              </Link>
+            ),
+            addressesOut: (
+              <Link to={`/tx/${tx.txId}`}>
+                {tx.addressesOut}
+              </Link>
+            ),
+            date: (
+              <Link to={`/tx/${tx.txId}`} className="text-nowrap">
+                {dateFormat(tx.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
+              </Link>
+            ),
           });
         })} />
     );

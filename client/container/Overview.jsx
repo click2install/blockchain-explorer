@@ -13,6 +13,8 @@ import HorizontalRule from '../component/HorizontalRule';
 import Table from '../component/Table';
 import TransactionValue from '../component/Table/TransactionValue';
 
+import SocialFeed from '../component/Social/SocialFeed'
+
 class Overview extends Component {
   static propTypes = {
     txs: PropTypes.array.isRequired
@@ -23,12 +25,12 @@ class Overview extends Component {
 
     this.state = {
       cols: [
-        {title: 'Height', key: 'blockHeight'},
-        {title: 'Transaction Hash', key: 'txId'},
-        {title: 'Value', key: 'vout'},
-        'age',
-        'recipients',
-        {title: 'Created', key: 'createdAt'},
+        { title: 'Height', key: 'blockHeight' },
+        { title: 'Transaction Hash', key: 'label' },
+        { title: 'Value', key: 'valueOut' },
+        { title: 'Sources', key: 'countIn' },
+        { title: 'Recepients', key: 'countOut' },
+        { title: 'Created', key: 'date' },
       ]
     };
   };
@@ -36,30 +38,61 @@ class Overview extends Component {
   render() {
     // Setup the list of transactions with age since created.
     const txs = this.props.txs.map(tx => {
-      const createdAt = moment(tx.createdAt).utc();
-      const diffSeconds = moment().utc().diff(createdAt, 'seconds');
-      let blockValue = 0.0;
-      if (tx.vout && tx.vout.length) {
-        tx.vout.forEach(vout => blockValue += vout.value);
-      }
+      const date = moment(tx.date).utc();
+      const diffSeconds = moment().utc().diff(date, 'seconds');
 
       return ({
         ...tx,
-        age: diffSeconds < 60 ? `${ diffSeconds } seconds` : createdAt.fromNow(true),
-        blockHeight: (<Link to={ `/block/${ tx.blockHeight }` }>{ tx.blockHeight }</Link>),
-        createdAt: dateFormat(tx.createdAt),
-        recipients: tx.vout.length,
-        txId: (<Link to={ `/tx/${ tx.txId }` }>{ tx.txId }</Link>),
-        vout: TransactionValue(tx, blockValue)
+        blockHeight: (
+          <Link to={`/block/${tx.blockHeight}`}>
+            {tx.blockHeight}
+          </Link>
+        ),
+        label: (
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.txId}
+          </Link>
+        ),
+        valueOut: (
+          <Link to={`/tx/${tx.txId}`}>
+            {TransactionValue(tx, tx.amountOut)}
+          </Link>
+        ),
+        countIn: (
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.addressesIn}
+          </Link>
+        ),
+        countOut: (
+          <Link to={`/tx/${tx.txId}`}>
+            {tx.addressesOut}
+          </Link>
+        ),
+        date: (
+          <Link to={`/tx/${tx.txId}`} className="text-nowrap">
+            {dateFormat(tx.date)} ({diffSeconds < 60 ? `${diffSeconds} seconds` : date.fromNow(true)})
+          </Link>
+        ),
       });
     });
 
+    const getLatestTxs = () => {
+      return (<div><HorizontalRule title="Latest Non-Reward Transactions" />
+        <Table
+          cols={this.state.cols}
+          data={txs} /></div>)
+    }
+
+    const getSocialFeed = () => {
+      return (<div>
+        <SocialFeed title="Latest Development Updates" />
+      </div>)
+    }
+
     return (
       <div>
-        <HorizontalRule title="Latest Blocks" />
-        <Table
-          cols={ this.state.cols }
-          data={ txs } />
+        {getSocialFeed()}
+        {/*getLatestTxs()*/}
       </div>
     );
   };
@@ -70,7 +103,7 @@ const mapDispatch = dispatch => ({
 });
 
 const mapState = state => ({
-  txs: state.txs
+  txs: state.txs.filter((tx, index) => index < 10) // Only take first 10 items from txs
 });
 
 export default connect(mapState, mapDispatch)(Overview);

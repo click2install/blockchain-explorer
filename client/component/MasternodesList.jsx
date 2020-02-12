@@ -1,4 +1,7 @@
 import Component from '../core/Component';
+import throttle from '../../lib/throttle';
+import numeral from 'numeral';
+import config from '../../config'
 import { dateFormat } from '../../lib/date';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -24,16 +27,19 @@ class MasternodesList extends Component {
 
   constructor(props) {
     super(props);
-    this.debounce = null;
     this.state = {
+      title: props.title,
       cols: [
         { key: 'lastPaidAt', title: 'Last Paid' },
-        { key: 'active', title: 'Active' },
         { key: 'addr', title: 'Address' },
-        { key: 'txHash', title: 'Collateral TX' },
-        { key: 'txOutIdx', title: 'Index' },
-        { key: 'ver', title: 'Version' },
-        { key: 'status', title: 'Status' },
+        { key: 'activeMns', title: 'Masternodes' },
+        { key: 'created', title: 'Created' },
+        //{ key: 'txHash', title: 'Collateral TX' },
+        //{ key: 'txOutIdx', title: 'Index' },
+        //{ key: 'ver', title: 'Version' },
+        //{ key: 'status', title: 'Status' },
+        { key: 'rewardsCount', title: 'Rewards Count' },
+        { key: 'totalRewards', title: 'Total Rewards' },
       ],
       error: null,
       loading: true,
@@ -49,6 +55,24 @@ class MasternodesList extends Component {
         return !this.props.hideCols.includes(value.key);
       });
     }
+
+    this.getThrottledMns = throttle(() => {
+      this.props
+        .getMNs({
+          limit: this.state.size,
+          skip: (this.state.page - 1) * this.state.size,
+          ...(this.props.tag ? { tag: this.props.tag } : null)
+        })
+        .then(({ mns, pages, total }) => {
+          this.setState({
+            mns,
+            pages,
+            loading: false,
+            title: `${props.title} (${total} Since Genesis)`
+          });
+        })
+        .catch(error => this.setState({ error, loading: false }));
+    }, 800);
   };
 
   componentDidMount() {
@@ -56,31 +80,14 @@ class MasternodesList extends Component {
   };
 
   componentWillUnmount() {
-    if (this.debounce) {
-      clearTimeout(this.debounce);
-      this.debounce = null;
+    if (this.getThrottledMns) {
+      clearTimeout(this.getThrottledMns);
     }
   };
 
   getMNs = () => {
     this.setState({ loading: true }, () => {
-      if (this.debounce) {
-        clearTimeout(this.debounce);
-      }
-
-      this.debounce = setTimeout(() => {
-        this.props
-          .getMNs({
-            limit: this.state.size,
-            skip: (this.state.page - 1) * this.state.size
-          })
-          .then(({ mns, pages }) => {
-            if (this.debounce) {
-              this.setState({ mns, pages, loading: false });
-            }
-          })
-          .catch(error => this.setState({ error, loading: false }));
-      }, 800);
+      this.getThrottledMns();
     });
   };
 
@@ -101,10 +108,13 @@ class MasternodesList extends Component {
         return null;
       }
       return (
-        <Select
-          onChange={value => this.handleSize(value)}
-          selectedValue={this.state.size}
-          options={selectOptions} />
+        <label>
+          Per Page
+          <Select
+            onChange={value => this.handleSize(value)}
+            selectedValue={this.state.size}
+            options={selectOptions} />
+        </label>
       );
     };
 
@@ -141,33 +151,51 @@ class MasternodesList extends Component {
     return (
       <div>
         <HorizontalRule
-          select={getPaginationDropdown()}
-          title={this.props.title} />
+          selects={[getPaginationDropdown()]}
+          title={this.state.title} />
         <Table
           cols={this.state.cols}
           data={sortBy(this.state.mns.map((mn) => {
-            const lastPaidAt = moment(mn.lastPaidAt).utc();
+            const lastPaidAt = moment(mn.lastMovement.carverMovement.date).utc();
             const isEpoch = lastPaidAt.unix() === 0;
+
+            const ageDays = moment(mn.lastMovement.carverMovement.date).utc().unix() - moment(mn.date).utc().unix();
+
+            const mnAddress = mn.label.replace(':MN', ''); //Remove the :MN suffix from carver address
 
             return {
               ...mn,
-              active: moment().subtract(mn.active, 'seconds').utc().fromNow(),
+              active: moment().subtract(mn.active, 'seconds').utc().fromNow(true),
               addr: (
-                <Link to={`/address/${mn.addr}`}>
-                  {`${mn.addr.substr(0, 20)}...`}
+                <Link to={`/address/${mnAddress}`}>
+                  {mnAddress}
                 </Link>
               ),
-              lastPaidAt: isEpoch ? 'N/A' : lastPaidAt.fromNow(),
-              txHash: (
-                <Link to={`/tx/${mn.txHash}`}>
-                  {`${mn.txHash.substr(0, 20)}...`}
+              created: (
+                <Link to={`/address/${mnAddress}`} className="text-nowrap">
+                  {moment(mn.date).utc().fromNow()}
                 </Link>
               ),
-              status: (
-                <span className="text-nowrap">
-                  {getIcon(mn)}
-                  {mn.status}
-                </span>
+              lastPaidAt: (
+                <Link to={`/address/${mnAddress}`} className="text-nowrap">
+                  {isEpoch ? 'N/A' : lastPaidAt.fromNow()}
+                </Link>
+              ),
+              activeMns: (
+                <Link to={`/address/${mnAddress}`}>
+                  {`${mn.masternodesForAddress.length}`}
+                </Link>
+              ),
+
+              rewardsCount: (
+                <Link to={`/address/${mnAddress}`}>
+                  {`${mn.countOut}`}
+                </Link>
+              ),
+              totalRewards: (
+                <Link to={`/address/${mnAddress}`}>
+                  {numeral(mn.balance * -1).format(config.coinDetails.coinNumberFormat)} {config.coinDetails.shortName}
+                </Link>
               )
             };
           }), ['status'])} />

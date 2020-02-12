@@ -69,7 +69,7 @@
 
 	&__toggle {
 		cursor: pointer;
-		font-size: 2em;
+		font-size: 1.4em;
 		height: 24px;
 		width: 24px;
 	}
@@ -78,7 +78,7 @@
 		height: auto;
 		margin-right: 2em;
 		/* Used to align with searchbar */
-		width: 140px;
+		width: 120px;
 	}
 
 	&__title {
@@ -153,10 +153,10 @@
 	}
 
 	&--open &__logo {
-		animation: fadein 2s;
-			-moz-animation: fadein 2s;
-				-webkit-animation: fadein 2s;
-					-o-animation: fadein 2s;
+		animation: fadein 0.5s;
+			-moz-animation: fadein 0.5s;
+				-webkit-animation: fadein 0.5s;
+					-o-animation: fadein 0.5s;
 	}
 
 	/*Closed modifier*/
